@@ -10,7 +10,8 @@ import Router from 'koa-router';
 // import multer from 'koa-multer';
 // import prettyFormat from 'pretty-format';
 
-import dataloader from './middlewares/dataloader';
+import dataloader from '../middlewares/dataloader';
+import errorHandler from '../middlewares/errorHandler';
 import { jwtSecret } from '../common/config';
 // import { logApiErrorToSlack } from '../common/slack';
 // import { getUser, getLocation } from './helper';
@@ -30,6 +31,7 @@ const router = new Router();
 //   fieldSize: 30 * 1024 * 1024,
 // };
 
+app.use(errorHandler());
 app.use(logger());
 app.use(cors());
 app.use(dataloader());

@@ -12,13 +12,10 @@ const userGet = async (ctx: ApiContext) => {
   }
 
   try {
-    console.log('CONTEXT:', ctx.context);
-    // console.log('USERLOADER:', UserLoader.load(ctx, id));
-    ctx.body = await UserLoader.load(ctx.context, id);
     ctx.status = 200;
+    ctx.body = await UserLoader.load(ctx, id);
   } catch (err) {
-    console.log('user GET : ', err);
-    ctx.throw(409, `Database query error: ${err}`);
+    ctx.throw(404, err);
   }
 };
 
