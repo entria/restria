@@ -7,7 +7,7 @@ import cors from 'kcors';
 // import convert from 'koa-convert';
 import logger from 'koa-logger';
 import Router from 'koa-router';
-import multer from 'koa-multer';
+// import multer from 'koa-multer';
 // import prettyFormat from 'pretty-format';
 
 // import * as loaders from './loader';
@@ -15,22 +15,29 @@ import { jwtSecret } from '../common/config';
 // import { logApiErrorToSlack } from '../common/slack';
 // import { getUser, getLocation } from './helper';
 
+import index from './routes/index';
+
 const app = new Koa();
 
 app.keys = jwtSecret;
 
 const router = new Router();
-const storage = multer.memoryStorage();
+// const storage = multer.memoryStorage();
 // https://github.com/expressjs/multer#limits
-const limits = {
-  // Increasing max upload size to 30 mb, since busboy default is only 1 mb
-  fieldSize: 30 * 1024 * 1024,
-};
+// const limits = {
+//   // Increasing max upload size to 30 mb, since busboy default is only 1 mb
+//   fieldSize: 30 * 1024 * 1024,
+// };
 
 app.use(logger());
 app.use(cors());
 
-router.all('/api', multer({ storage, limits }).any());
+router
+  .get('/', index)
+  .get('/api', index)
+  .get('/api/v1', index);
+
+// router.all('/api', multer({ storage, limits }).any());
 app.use(router.routes()).use(router.allowedMethods());
 
 export default app;
