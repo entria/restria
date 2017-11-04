@@ -1,82 +1,56 @@
-/* @flow */
+// @flow
 import DataLoader from 'dataloader';
 import { dbs } from '../../../../common/config';
 import pgLoader from '../pgLoader';
 
-import type { GraphQLContext, TableSinglePrimaryKey } from '../../../TypeDefinition';
+import tPerson from '../../../type/PersonType';
 
-export const tActivity: TableSinglePrimaryKey = {
-  tableName: 'activity',
-  primaryKey: 'id',
-  fields: {
-    id: 'id',
-    user_id: 'userId',
-    title: 'title',
-    category: 'category',
-    description: 'description',
-    activity_time: 'activityTime',
-    active: 'active',
-    created_at: 'createdAt',
-    updated_at: 'updatedAt',
-  },
-};
+import type { ApiContext } from '../../../../TypeDefinition';
+import type { PersonType } from '../../../type/PersonType';
 
-export type ActivityType = {
-  id: string,
-  user_id: string,
-  title: string,
-  category: string,
-  description: string,
-  activity_time: string,
-  active: boolean,
-  created_at: ?string,
-  updated_at: ?string,
-};
-
-export default class Activity {
+export default class Person {
   id: string;
-  _id: string;
-  userId: string;
-  title: string;
-  description: string;
-  category: string;
-  activityTime: Date;
+  name: string;
+  nick: ?string;
+  email: string;
+  password: string;
   active: boolean;
+  emailVerified: boolean;
   createdAt: ?Date;
   updatedAt: ?Date;
 
-  constructor(data: ActivityType) {
+  constructor(data: PersonType) {
     this.id = data.id;
-    this._id = data.id;
-    this.userId = data.user_id;
-    this.title = data.title;
-    this.description = data.description;
-    this.category = data.category;
+    this.name = data.name;
+    this.nick = data.nick;
+    this.email = data.email;
+    this.password = data.password;
     this.active = data.active;
-    this.activityTime = new Date(data.activity_time);
+    this.emailVerified = data.email_verified;
     this.createdAt = data.created_at ? new Date(data.created_at) : null;
     this.updatedAt = data.updated_at ? new Date(data.updated_at) : null;
   }
 }
 
-const viewerCanSee = (/*context: GraphQLContext , data: ActivityType*/): boolean => true;
+const viewerCanSee = (): boolean => true;
 
-export const getLoader = (context: GraphQLContext) =>
-  new DataLoader(async ids => pgLoader(context[dbs.appfv.name], tActivity, ids), {
+export const getLoader = (context: ApiContext) => {
+  return new DataLoader(async ids => pgLoader(context[dbs.restria.name], tPerson, ids), {
     maxBatchSize: 500,
   });
+};
 
-export const load = async (context: GraphQLContext, id: string): Promise<?Activity> => {
+export const load = async (context: ApiContext, id: string): Promise<?Person> => {
   if (!id) return null;
 
-  const loader = context.dataloaders.ActivityLoader;
+  const loader = context.dataloaders.PersonLoader;
 
   const data = await loader.load(id);
 
   if (!data) return null;
 
-  return viewerCanSee(context, data) ? new Activity(data) : null;
+  return viewerCanSee() ? new Person(data) : null;
 };
 
-export const clearCache = (context: GraphQLContext, id: string) =>
-  context.dataloaders.ActivityLoader.clear(id.toString());
+export const clearCache = (context: ApiContext, id: string) =>
+  context.dataloaders.PersonLoader.clear(id.toString());
