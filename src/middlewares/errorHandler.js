@@ -11,7 +11,7 @@ const errorHandler = (): Middleware => async (ctx: ApiContext, next: () => void)
   try {
     await next();
   } catch (error) {
-    console.log(ctx.req.body);
+    console.log('request:', ctx.req.body);
     console.log('error: ', new Date().toISOString(), error);
 
     // sendtoSlack({
