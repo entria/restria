@@ -48,9 +48,9 @@ export type PgClient = {
 // ApiContext
 export type ApiContext = {
   ...Context,
-  conns: {
-    pg: PgClient,
-  },
+  // conns: {
+  //   pg: PgClient,
+  // },
   user: UserType,
   dataloaders: ApiDataloaders,
 };
