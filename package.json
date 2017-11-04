@@ -76,6 +76,7 @@
     "api": "nodemon src/api/index.js --exec babel-node",
     "lint": "eslint src/**",
     "lint:staged": "lint-staged",
+    "pg:start": "./scripts/dev_pg_helper.sh restria start",
     "server": "node dist/api/index.js",
     "start": "nodemon src/api/index.js --exec babel-node",
     "test": "jest --coverage --runInBand --forceExit",

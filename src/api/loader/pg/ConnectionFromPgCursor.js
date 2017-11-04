@@ -1,8 +1,11 @@
 // @flow
+import type { ConnectionArguments } from 'graphql-relay';
+import type { GraphQLContext } from '../../TypeDefinition';
 
-import type { ApiContext, ConnectionArguments } from '../../TypeDefinition';
+export const PREFIX = 'pg:';
 
-export const PREFIX = 'mongo:';
+// Pre-12c syntax [could also customize the original query and use row_number()]
+export const sqlPaginated = (sql: string): string => `${sql} OFFSET $1 LIMIT $2`;
 
 export const base64 = (str: string): string => new Buffer(str, 'ascii').toString('base64');
 export const unbase64 = (b64: string): string => new Buffer(b64, 'base64').toString('ascii');
@@ -32,16 +35,30 @@ export const getOffsetWithDefault = (cursor: string, defaultOffset: number): num
 export const offsetToCursor = (offset: number): string => base64(PREFIX + offset);
 
 type TotalCountOptions = {
-  // MongoCursor
-  cursor: any,
+  // Connection Object
+  client: Object,
+  // From sql statement
+  from: string,
+  // Where sql statement
+  where?: ?string,
+  // distinct query statement
+  distinctQuery?: ?string,
 };
-export const getTotalCount = async ({ cursor }: TotalCountOptions) => {
-  const totalCount = await cursor.count();
+export const getTotalCount = async ({ client, from, where, distinctQuery }: TotalCountOptions) => {
+  const whereSt = where != null ? `where ${where}` : '';
 
-  // return cursor to find again
-  cursor.find();
+  const sqlCount = !distinctQuery
+    ? `select count(*) from ${from} ${whereSt}`
+    : `select count(DISTINCT ${distinctQuery}) from ${from} ${whereSt}`;
 
-  return totalCount;
+  // maybe this can optimize count distinct
+  //SELECT COUNT(*) FROM (SELECT DISTINCT column_name FROM table_name) AS temp;
+
+  const resultCount = await client.query(sqlCount);
+
+  const totalCount = resultCount.rows[0].count;
+
+  return parseInt(totalCount);
 };
 
 type OffsetOptions = {
@@ -128,23 +145,38 @@ export const getPageInfo = ({
 };
 
 type ConnectionOptions = {
-  // MongoCursor
-  cursor: any,
+  // Connection Object
+  client: Object,
+  // SQL statement
+  sql: string,
+  // From sql statement
+  from: string,
+  // Where sql statement
+  where?: ?string,
   // GraphQL context
-  context: ApiContext,
+  context: GraphQLContext,
   // Connection Args
   args: ConnectionArguments,
   // Loader to load individually objects
-  loader: (context: ApiContext, id: string) => Object,
+  loader: (context: GraphQLContext, id: string) => Object,
+  // distinct query statement
+  distinctQuery?: ?string,
 };
-const connectionFromMongoCursor = async ({
-  cursor,
+const connectionFromPgCursor = async ({
+  client,
+  sql,
+  from,
+  where,
   context,
   args = {},
   loader,
+  distinctQuery,
 }: ConnectionOptions) => {
   const totalCount = await getTotalCount({
-    cursor,
+    client,
+    from,
+    where,
+    distinctQuery,
   });
 
   const {
@@ -160,16 +192,23 @@ const connectionFromMongoCursor = async ({
     endOffset,
   } = calculateOffsets({ args, totalCount });
 
-  // If supplied slice is too large, trim it down before mapping over it.
-  cursor.skip(skip);
-  cursor.limit(limit);
+  // Add LIMIT and OFFSET to query
+  const sqlPaged = sqlPaginated(sql);
 
-  const slice = await cursor.exec();
+  // console.time(sql);
+  const result = await client.query(sqlPaged, [skip, limit]);
+  // console.timeEnd(sql);
 
-  const edges = slice.map((value, index) => ({
-    cursor: offsetToCursor(startOffset + index),
-    node: loader(context, value._id),
-  }));
+  const { rows } = result;
+
+  const edges = rows.map((value, index) => {
+    const { id } = value;
+
+    return {
+      cursor: offsetToCursor(startOffset + index),
+      node: loader(context, id),
+    };
+  });
 
   return {
     edges,
@@ -189,4 +228,4 @@ const connectionFromMongoCursor = async ({
   };
 };
 
-export default connectionFromMongoCursor;
+export default connectionFromPgCursor;

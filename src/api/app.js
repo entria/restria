@@ -40,7 +40,7 @@ router
   .get('/', index)
   .get('/api', index)
   .get('/api/v1', index)
-  .get('/api/v1/user/:id', userGet);
+  .get('/api/v1/users/:id', userGet);
 
 // router.all('/api', multer({ storage, limits }).any());
 app.use(router.routes()).use(router.allowedMethods());

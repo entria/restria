@@ -1,3 +1,3 @@
 // @flow
 
-export * as UserLoader from './UserLoader';
+export * as PersonLoader from './pg/db/PersonLoader';
