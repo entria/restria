@@ -45,16 +45,6 @@ export type PgClient = {
     ((text: string, values: Array<any>) => Promise<mixed>),
 };
 
-// ApiContext
-export type ApiContext = {
-  ...Context,
-  // conns: {
-  //   pg: PgClient,
-  // },
-  user: UserType,
-  dataloaders: ApiDataloaders,
-};
-
 // Args
 export type ConnectionCursor = string;
 
@@ -64,4 +54,15 @@ export type ConnectionArguments = {
   first?: ?number,
   last?: ?number,
   search?: ?string,
+};
+
+// ApiContext
+export type ApiContext = {
+  ...Context,
+  // conns: {
+  //   pg: PgClient,
+  // },
+  user: UserType,
+  dataloaders: ApiDataloaders,
+  args: ConnectionArguments,
 };
