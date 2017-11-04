@@ -27,7 +27,7 @@ export function sendtoSlack({ channel, ...args }: SlackWebhookOptions) {
   });
 }
 
-export function logApiErrorToSlack(application: string, error, header: string, channel: string) {
+export function logApiErrorToSlack(application: string, error: Object, header: string, channel: string) {
   if (error.message.indexOf('Must provide query string') > -1) {
     return;
   }
