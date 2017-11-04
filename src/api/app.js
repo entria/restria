@@ -10,12 +10,13 @@ import Router from 'koa-router';
 // import multer from 'koa-multer';
 // import prettyFormat from 'pretty-format';
 
-// import * as loaders from './loader';
+import dataloader from './middlewares/dataloader';
 import { jwtSecret } from '../common/config';
 // import { logApiErrorToSlack } from '../common/slack';
 // import { getUser, getLocation } from './helper';
 
 import index from './routes/index';
+import userGet from './routes/UserGet';
 
 const app = new Koa();
 
@@ -31,11 +32,13 @@ const router = new Router();
 
 app.use(logger());
 app.use(cors());
+app.use(dataloader());
 
 router
   .get('/', index)
   .get('/api', index)
-  .get('/api/v1', index);
+  .get('/api/v1', index)
+  .get('/api/v1/user/:id', userGet);
 
 // router.all('/api', multer({ storage, limits }).any());
 app.use(router.routes()).use(router.allowedMethods());
