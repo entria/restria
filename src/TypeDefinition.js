@@ -59,9 +59,9 @@ export type ConnectionArguments = {
 // ApiContext
 export type ApiContext = {
   ...Context,
-  // conns: {
-  //   pg: PgClient,
-  // },
+  conns: {
+    pg: PgClient,
+  },
   user: UserType,
   dataloaders: ApiDataloaders,
   args: ConnectionArguments,

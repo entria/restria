@@ -35,7 +35,7 @@ export default class Person {
 const viewerCanSee = (): boolean => true;
 
 export const getLoader = (context: ApiContext) => {
-  return new DataLoader(async ids => pgLoader(context[dbs.restria.name], tPerson, ids), {
+  return new DataLoader(async ids => pgLoader(context.conns.restria, tPerson, ids), {
     maxBatchSize: 500,
   });
 };
@@ -43,9 +43,7 @@ export const getLoader = (context: ApiContext) => {
 export const load = async (context: ApiContext, id: string): Promise<?Person> => {
   if (!id) return null;
 
-  const loader = context.dataloaders.PersonLoader;
-
-  const data = await loader.load(id);
+  const data = await context.dataloaders.PersonLoader.load(id);
 
   if (!data) return null;
 
