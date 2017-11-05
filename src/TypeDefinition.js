@@ -2,7 +2,7 @@
 
 import type DataLoader from 'dataloader';
 import type { Context } from 'koa';
-import type { UserType } from './api/loader/UserLoader';
+import type { PersonType } from './api/type/PersonType';
 
 type Key = string | Array<string>;
 
@@ -43,6 +43,8 @@ export type ApiDataloaders = {
 export type PgClient = {
   query: ((query: string) => Promise<mixed>) &
     ((text: string, values: Array<any>) => Promise<mixed>),
+  connect: () => Promise<void>,
+  end: () => Promise<void>,
 };
 
 // Args
@@ -59,10 +61,10 @@ export type ConnectionArguments = {
 // ApiContext
 export type ApiContext = {
   ...Context,
-  // conns: {
-  //   pg: PgClient,
-  // },
-  user: UserType,
+  conns: {
+    pg: PgClient,
+  },
+  person: PersonType,
   dataloaders: ApiDataloaders,
   args: ConnectionArguments,
 };

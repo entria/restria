@@ -9,7 +9,7 @@ const dataloader = (): Middleware => async (ctx: ApiContext, next: () => void) =
   const dataloaders = Object.keys(loaders).reduce(
     (prev, loader) => ({
       ...prev,
-      [loader]: loaders[loader].getLoader(),
+      [loader]: loaders[loader].getLoader(ctx),
     }),
     {},
   );

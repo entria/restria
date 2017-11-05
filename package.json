@@ -18,10 +18,11 @@
     "koa-router": "^7.2.1",
     "kue": "^0.11.6",
     "lint-staged": "^4.0.0",
-    "mongoose": "^4.10.7",
+    "pg": "^7.4.0",
     "pre-commit": "^1.2.2",
     "prettier": "^1.4.4",
-    "pretty-format": "^21.2.1"
+    "pretty-format": "^21.2.1",
+    "uuid": "^3.1.0"
   },
   "devDependencies": {
     "babel-cli": "^6.24.1",
@@ -51,10 +52,7 @@
     "coverageReporters": [
       "lcov",
       "html"
-    ],
-    "moduleNameMapper": {
-      "^mongoose$": "<rootDir>/node_modules/mongoose"
-    }
+    ]
   },
   "license": "MIT",
   "lint-staged": {
@@ -76,6 +74,17 @@
     "api": "nodemon src/api/index.js --exec babel-node",
     "lint": "eslint src/**",
     "lint:staged": "lint-staged",
+    "pg:create-db": "./scripts/dev_pg_helper.sh restria_dev restria_user 12345",
+    "pg:start": "./scripts/dev_pg_helper.sh restria_dev start",
+    "pg:stop": "./scripts/dev_pg_helper.sh restria_dev stop",
+    "pg:run": "babel-node pgSql/index.js",
+    "pg:up": "yarn pg:run -- up",
+    "pg:down": "yarn pg:run -- down",
+    "pg:migrate": "yarn pg:run -- migrate",
+    "pg:migration": "yarn pg:run -- migration",
+    "pg:rollback": "yarn pg:run -- rollback",
+    "pg:nuke": "yarn pg:down && yarn pg:up && yarn pg:run seed",
+    "pg:seed": "yarn pg:run -- seed",
     "server": "node dist/api/index.js",
     "start": "nodemon src/api/index.js --exec babel-node",
     "test": "jest --coverage --runInBand --forceExit",

@@ -10,14 +10,15 @@ import Router from 'koa-router';
 // import multer from 'koa-multer';
 // import prettyFormat from 'pretty-format';
 
-import dataloader from '../middlewares/dataloader';
 import errorHandler from '../middlewares/errorHandler';
+import dataloader from '../middlewares/dataloader';
+import pgClientFromPool from '../middlewares/pgClientFromPool';
 import { jwtSecret } from '../common/config';
 // import { logApiErrorToSlack } from '../common/slack';
 // import { getUser, getLocation } from './helper';
 
 import index from './routes/index';
-import userGet from './routes/UserGet';
+import personGet from './routes/person/PersonGet';
 
 const app = new Koa();
 
@@ -35,12 +36,13 @@ app.use(errorHandler());
 app.use(logger());
 app.use(cors());
 app.use(dataloader());
+app.use(pgClientFromPool());
 
 router
   .get('/', index)
   .get('/api', index)
   .get('/api/v1', index)
-  .get('/api/v1/user/:id', userGet);
+  .get('/api/v1/users/:id', personGet);
 
 // router.all('/api', multer({ storage, limits }).any());
 app.use(router.routes()).use(router.allowedMethods());
