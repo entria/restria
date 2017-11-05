@@ -61,8 +61,9 @@ function migrate(suffix, db) {
     .reduce(
       (lastOne, fileName) => {
         const createdAt = datefy(fileName);
-        if (lastOne != null && (!lastOne.createdAt || createdAt > lastOne.createdAt))
+        if (lastOne != null && (!lastOne.createdAt || createdAt > lastOne.createdAt)) {
           return { createdAt, fileName };
+        }
         return null;
       },
       { createdAt: null, fileName: null },
