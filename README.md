@@ -1,4 +1,4 @@
-# Restria - Entria's REST API boilerplate
+# [WIP] Restria - Entria's REST API boilerplate
 
 ## Basic methods
 | Method | Endpoint | Description |
