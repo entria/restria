@@ -18,7 +18,7 @@ import { jwtSecret } from '../common/config';
 // import { getUser, getLocation } from './helper';
 
 import index from './routes/index';
-import personGet from './routes/person/PersonGet';
+import * as PersonGet from './routes/person/PersonGet';
 
 const app = new Koa();
 
@@ -42,7 +42,8 @@ router
   .get('/', index)
   .get('/api', index)
   .get('/api/v1', index)
-  .get('/api/v1/users/:id', personGet);
+  .get('/api/v1/users/:id', PersonGet.personGet)
+  .get('/api/v1/users', PersonGet.personsGet);
 
 // router.all('/api', multer({ storage, limits }).any());
 app.use(router.routes()).use(router.allowedMethods());
