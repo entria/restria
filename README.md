@@ -2,7 +2,7 @@
 
 ## Basic methods
 | Method | Endpoint | Description |
-| --- | --- | --- | --- |
+| --- | --- | --- |
 | GET | /v1/users/:id | get user by id | 
 | GET | /v1/users | get all users |
 | POST | /v1/users/:id | insert user |
