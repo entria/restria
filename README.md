@@ -9,3 +9,6 @@
 | POST | /v1/users | bulk insert users |
 | DELETE | /v1/user/:id | soft delete user by id |
 | DELETE | /v1/users | soft delete bulk of users |
+
+## Postgres
+Check [Wiki](https://github.com/jgcmarins/restria/wiki)
