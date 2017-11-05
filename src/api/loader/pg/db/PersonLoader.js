@@ -1,8 +1,7 @@
 // @flow
 import DataLoader from 'dataloader';
-import { dbs } from '../../../../common/config';
-import pgLoader from '../pgLoader';
 
+import pgLoader from '../pgLoader';
 import tPerson from '../../../type/PersonType';
 
 import type { ApiContext } from '../../../../TypeDefinition';
