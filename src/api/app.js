@@ -44,6 +44,10 @@ router
   .get('/api/v1', index)
   .get('/api/v1/users/:id', PersonGet.personGet)
   .get('/api/v1/users', PersonGet.personsGet);
+// .post('/api/v1/users/:id', PersonPost.personPost)
+// .post('/api/v1/users', PersonPost.personsPost)
+// .delete('/api/v1/users/:id', PersonDelete.personDelete)
+// .delete('/api/v1/users', PersonDelete.personsDelete)
 
 // router.all('/api', multer({ storage, limits }).any());
 app.use(router.routes()).use(router.allowedMethods());

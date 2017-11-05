@@ -1,7 +1,7 @@
 // @flow
 
 import jwt from 'jsonwebtoken';
-import { User } from '../models';
+// import { User } from '../models';
 import { jwtSecret } from '../common/config';
 import { validLoginTokenScopes } from '../common/consts';
 
@@ -25,9 +25,10 @@ export async function getUser(token: string) {
       return null;
     }
 
-    return await User.findOne({
-      _id: decodedToken.id,
-    });
+    return {};
+    // return await User.findOne({
+    //   _id: decodedToken.id,
+    // });
   } catch (err) {
     return null;
   }

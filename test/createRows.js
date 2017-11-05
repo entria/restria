@@ -1,3 +1,4 @@
+// @flow
 import { User, AdminUser } from '../src/models';
 
 // Counter handles creating multiple rows on a single test
@@ -8,10 +9,7 @@ let counter = {
 
 // Function to restart the counter before every test
 export const restartCounter = () => {
-  counter = Object.keys(counter).reduce(
-    (prev, curr) => ({ ...prev, [curr]: 0 }),
-    {},
-  );
+  counter = Object.keys(counter).reduce((prev, curr) => ({ ...prev, [curr]: 0 }), {});
 };
 
 export const createUser = async ({ payload } = {}) => {
