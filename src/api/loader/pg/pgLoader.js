@@ -2,7 +2,7 @@
  * Postgresql Loader use dataloader to batch sql queries
  * @flow
  */
-import type { TableSinglePrimaryKey } from '../../../TypeDefinition';
+import type { TableSinglePrimaryKey, PgClient } from '../../../TypeDefinition';
 
 function indexResults(results, indexField, cacheKeyFn = key => key) {
   const indexedResults = new Map();
@@ -21,7 +21,7 @@ function normalizeResults(keys, indexField, cacheKeyFn = key => key) {
 }
 
 const pgLoader = async (
-  client: Object,
+  client: PgClient,
   table: TableSinglePrimaryKey,
   ids: Array<string>,
   key?: string,

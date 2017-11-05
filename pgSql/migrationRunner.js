@@ -2,9 +2,15 @@
 import path from 'path';
 import fs from 'fs';
 
+import type { PgClient } from '../src/TypeDefinition';
+
 const migrationsDir = path.join(__dirname, 'migrations/');
 
-export default async function runner(command, db, handleConnection = true) {
+export default async function runner(
+  command: string,
+  db: PgClient,
+  handleConnection: boolean = true,
+) {
   if (handleConnection) await db.connect();
 
   try {
@@ -55,7 +61,8 @@ function migrate(suffix, db) {
     .reduce(
       (lastOne, fileName) => {
         const createdAt = datefy(fileName);
-        if (!lastOne.createdAt || createdAt > lastOne.createdAt) return { createdAt, fileName };
+        if (lastOne != null && (!lastOne.createdAt || createdAt > lastOne.createdAt))
+          return { createdAt, fileName };
         return null;
       },
       { createdAt: null, fileName: null },
