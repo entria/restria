@@ -2,9 +2,10 @@
 import DataLoader from 'dataloader';
 
 import pgLoader from '../pgLoader';
+import connectionFromPgCursor from '../ConnectionFromPgCursor';
 import tPerson from '../../../type/PersonType';
 
-import type { ApiContext } from '../../../../TypeDefinition';
+import type { ApiContext, ConnectionArguments } from '../../../../TypeDefinition';
 import type { PersonType } from '../../../type/PersonType';
 
 export default class Person {
@@ -47,6 +48,27 @@ export const load = async (context: ApiContext, id: string): Promise<?Person> =>
   if (!data) return null;
 
   return viewerCanSee() ? new Person(data) : null;
+};
+
+export const loadPersons = async (context: ApiContext, args: ConnectionArguments) => {
+  const client = context.conns.restria;
+
+  const from = `${tPerson.tableName}`;
+
+  const sql = `
+    select ${tPerson.primaryKey} ID
+    from ${from}
+    order by created_at desc
+  `;
+
+  return connectionFromPgCursor({
+    client,
+    sql,
+    from,
+    context,
+    args,
+    loader: load,
+  });
 };
 
 export const clearCache = (context: ApiContext, id: string) =>
