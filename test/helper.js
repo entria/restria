@@ -1,3 +1,4 @@
+// @flow
 import mongoose from 'mongoose';
 import * as graphqlLoaders from '../src/graphql/loader';
 import * as consoleLoaders from '../src/console/loader';
@@ -10,8 +11,7 @@ process.env.NODE_ENV = 'test';
 
 const config = {
   db: {
-    test: process.env.MONGO_URI_TEST ||
-      'mongodb://localhost/graphql-boilerplate-test',
+    test: process.env.MONGO_URI_TEST || 'mongodb://localhost/graphql-boilerplate-test',
   },
   connection: null,
 };
@@ -40,18 +40,16 @@ function connect() {
 
     config.connection = mongoose.connection;
 
-    config.connection
-      .once('open', resolve)
-      .on('error', e => {
-        if (e.message.code === 'ETIMEDOUT') {
-          console.log(e);
-
-          mongoose.connect(mongoUri, options);
-        }
-
+    config.connection.once('open', resolve).on('error', e => {
+      if (e.message.code === 'ETIMEDOUT') {
         console.log(e);
-        reject(e);
-      });
+
+        mongoose.connect(mongoUri, options);
+      }
+
+      console.log(e);
+      reject(e);
+    });
   });
 }
 
@@ -89,9 +87,7 @@ export function getContext(context) {
 
 function dropCollection(collection) {
   return new Promise((resolve, reject) => {
-    mongoose.connection.collections[
-      collection
-    ].drop(err => {
+    mongoose.connection.collections[collection].drop(err => {
       if (err) reject(err);
 
       resolve();
@@ -167,8 +163,7 @@ export function prepareObject(obj, frozenKeys = []) {
 
     // Handle array
     if (Array.isArray(value)) {
-      placeholder[key] = value.map(item =>
-        prepareObject(item));
+      placeholder[key] = value.map(item => prepareObject(item));
       return;
     }
 
@@ -210,10 +205,7 @@ export function prepareResponse(res, frozenKeys = []) {
  * @param obj
  * @returns {{}}
  */
-export function prepareMongooseObject(
-  obj,
-  frozenKeys = [],
-) {
+export function prepareMongooseObject(obj, frozenKeys = []) {
   return prepareObject(obj.toJSON(), frozenKeys);
 }
 
@@ -265,30 +257,19 @@ const sanitizeValue = (value, field, keys) => {
   }
 
   // Check if it's not an array and can be transformed into a string
-  if (
-    !Array.isArray(value) &&
-    typeof value.toString === 'function'
-  ) {
+  if (!Array.isArray(value) && typeof value.toString === 'function') {
     // Remove any non-alphanumeric character from value
-    const cleanValue = value
-      .toString()
-      .replace(/[^a-z0-9]/gi, '');
+    const cleanValue = value.toString().replace(/[^a-z0-9]/gi, '');
 
     // Check if it's a valid `ObjectId`, if so, replace it with a static value
-    if (
-      ObjectId.isValid(cleanValue) &&
-      value.toString().indexOf(cleanValue) !== -1
-    ) {
-      return value
-        .toString()
-        .replace(cleanValue, 'ObjectId');
+    if (ObjectId.isValid(cleanValue) && value.toString().indexOf(cleanValue) !== -1) {
+      return value.toString().replace(cleanValue, 'ObjectId');
     }
   }
 
   // if it's an array, sanitize the field
   if (Array.isArray(value)) {
-    return value.map(item =>
-      sanitizeValue(item, null, keys));
+    return value.map(item => sanitizeValue(item, null, keys));
   }
 
   // If it's an object, we call sanitizeTestObject function again to handle nested fields
@@ -306,29 +287,18 @@ const sanitizeValue = (value, field, keys) => {
  * @param ignore {[string]} Array of keys to ignore
  * @returns {object} The sanitized object
  */
-export const sanitizeTestObject = (
-  payload,
-  keys = ['id'],
-  ignore = [],
-) => {
-  return Object.keys(payload).reduce(
-    (sanitizedObj, field) => {
-      if (ignore.indexOf(field) !== -1) {
-        return sanitizedObj;
-      }
+export const sanitizeTestObject = (payload, keys = ['id'], ignore = []) => {
+  return Object.keys(payload).reduce((sanitizedObj, field) => {
+    if (ignore.indexOf(field) !== -1) {
+      return sanitizedObj;
+    }
 
-      const value = payload[field];
-      const sanitizedValue = sanitizeValue(
-        value,
-        field,
-        keys,
-      );
+    const value = payload[field];
+    const sanitizedValue = sanitizeValue(value, field, keys);
 
-      return {
-        ...sanitizedObj,
-        [field]: sanitizedValue,
-      };
-    },
-    {},
-  );
+    return {
+      ...sanitizedObj,
+      [field]: sanitizedValue,
+    };
+  }, {});
 };
