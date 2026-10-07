@@ -27,3 +27,7 @@ dist
 coverage
 .nyc_output
 .env
+.env*
+!.env*.example
+!.env.example
+!.env.sample
